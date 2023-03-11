@@ -12,13 +12,13 @@
 
     <!-- 个人信息及操作 -->
     <div class="right-menu">
-      <i class="el-icon-search"></i>
-      <i class="el-icon-full-screen"></i>
+      <!-- <i class="el-icon-search"></i> -->
+      <!-- <i class="el-icon-full-screen"></i> -->
       <el-dropdown class="avatar-container" trigger="click">
         <!-- 个人信息展示 -->
         <div class="avatar-wrapper">
-          <span>超级管理员</span>
-          <i class="el-icon-caret-bottom"></i>
+          <span class="avatar-wrapper-font">{{ userInfo.name }}</span>
+          <i class="el-icon-arrow-down"></i>
         </div>
         <!-- 用户操作 -->
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -35,28 +35,40 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
+import { mapGetters, mapState, mapActions } from 'vuex'
+// import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+// import store from '@/store'
 
 export default {
   components: {
-    Breadcrumb,
+    // Breadcrumb,
     Hamburger
   },
-  created() {
-    this.handlelogout()
-  },
   computed: {
-    ...mapGetters(['sidebar', 'avatar'])
+    ...mapGetters(['sidebar', 'avatar']),
+    ...mapState('user', ['userInfo'])
   },
   methods: {
+    ...mapActions('user', ['emptyTokenAction', 'emptyUserInfoAction']),
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
     async handlelogout() {
-      await this.$store.dispatch('user/getUserInfoAction')
-      // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      try {
+        await this.$confirm('我要滚啦, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        await this.emptyTokenAction()
+        await this.emptyUserInfoAction()
+        // this.$router.go(0)
+        this.$router.replace(`/login?redirectUrl=${this.$route.fullpath}`)
+        this.$message.success('退出我要滚啦')
+      } catch (error) {
+        this.$message.info('取消你大爷')
+      }
     }
   }
 }
@@ -67,7 +79,7 @@ export default {
   height: 50px;
   overflow: hidden;
   position: relative;
-  background: #fff;
+  background: -webkit-linear-gradient(left, #f83da4, #5b8cff);
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 
   .hamburger-container {
@@ -77,7 +89,9 @@ export default {
     cursor: pointer;
     transition: background 0.3s;
     -webkit-tap-highlight-color: transparent;
-
+    ::v-deep .hamburger {
+      fill: #fff;
+    }
     &:hover {
       background: rgba(0, 0, 0, 0.025);
     }
@@ -88,7 +102,7 @@ export default {
     font-size: 18px;
     line-height: 50px;
     margin-left: 10px;
-    color: red;
+    color: #fff;
     cursor: text;
     .breadBtn {
       background: #84a9fe;
@@ -110,45 +124,22 @@ export default {
     &:focus {
       outline: none;
     }
-
-    .right-menu-item {
-      display: inline-block;
-      padding: 0 8px;
-      height: 100%;
-      font-size: 18px;
-      color: #5a5e66;
-      vertical-align: text-bottom;
-
-      &.hover-effect {
-        cursor: pointer;
-        transition: background 0.3s;
-
-        &:hover {
-          background: rgba(0, 0, 0, 0.025);
-        }
-      }
-    }
-
     .avatar-container {
       margin-right: 30px;
 
       .avatar-wrapper {
-        margin-top: 5px;
         position: relative;
 
-        .user-avatar {
-          cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
+        .avatar-wrapper-font {
+          color: #fff;
         }
-
-        .el-icon-caret-bottom {
+        .el-icon-arrow-down {
           cursor: pointer;
           position: absolute;
           right: -20px;
-          top: 25px;
+          top: 18px;
           font-size: 12px;
+          color: #fff;
         }
       }
     }

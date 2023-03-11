@@ -15,9 +15,9 @@ router.beforeEach(async (to, form, next) => {
       next('/')
       NProgress.done()
     } else {
-      // if (!store.state.user.userInfo.userId) {
-      //   await store.dispatch('user/getuserInfoAction')
-      // }
+      if (store.state.user.userInfo !== '') {
+        await store.dispatch('user/getUserInfoAction')
+      }
       next()
     }
   } else { // 没有获取到token
