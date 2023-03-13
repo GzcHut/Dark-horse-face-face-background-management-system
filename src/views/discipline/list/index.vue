@@ -1,4 +1,5 @@
 <template>
+  <!-- 学科 -->
   <div>
     <el-card>
       <SearchComponents>
@@ -19,21 +20,21 @@
       </SearchComponents>
       <PageHeader>
         <template #left>
-          <span> 共5条记录 </span>
+          <span> 共{{ total }}条记录 </span>
         </template>
         <template #right></template>
       </PageHeader>
       <!-- 信息展示 -->
       <template>
-        <el-table style="width: 100%">
+        <el-table style="width: 100%" :data="disciplineForm">
           <el-table-column label="序号" />
-          <el-table-column label="学科名称" />
-          <el-table-column label="创建者" />
-          <el-table-column label="创建日期" />
-          <el-table-column label="前台是否显示" />
-          <el-table-column label="二级目录" />
-          <el-table-column label="标签" />
-          <el-table-column label="题目数量" />
+          <el-table-column label="学科名称" prop="subjectName" />
+          <el-table-column label="创建者" prop="username" />
+          <el-table-column label="创建日期" prop="addDate" />
+          <el-table-column label="前台是否显示" prop="isFrontDisplay" />
+          <el-table-column label="二级目录" prop="twoLevelDirectory" />
+          <el-table-column label="标签" prop="tags" />
+          <el-table-column label="题目数量" prop="totals" />
           <el-table-column label="操作">
             <template>
               <el-row>
@@ -66,25 +67,39 @@
 </template>
 
 <script>
+import { getDisciplineListAPI } from '@/api/disciplinemanagement'
 export default {
   name: 'DisciplineList',
   data() {
     return {
+      disciplineForm: [],
       query: {
         page: 1,
-        pagesize: 5
+        pagesize: 2
       },
       total: 5
     }
   },
+  created() {
+    this.getDisciplineList()
+  },
   methods: {
+    async getDisciplineList() {
+      const resp = await getDisciplineListAPI(this.query)
+      console.log(resp.data.items)
+      this.disciplineForm = resp.data.items
+      this.query.page = +resp.data.page
+      this.query.pagesize = +resp.data.pagesize
+      this.total = resp.data.counts
+    },
     handleSizeChange(val) {
       this.query.pagesize = val
-      this.getUserList()
+      this.getDisciplineList()
+      console.log(val)
     },
     handleCurrentChange(val) {
       this.query.page = val
-      this.getUserList()
+      this.getDisciplineList()
     }
   }
 }

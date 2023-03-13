@@ -1,4 +1,5 @@
 <template>
+  <!-- 标签 -->
   <div>
     <el-card>
       <SearchComponents>
@@ -25,19 +26,19 @@
       </SearchComponents>
       <PageHeader>
         <template #left>
-          <span> 共5条记录 </span>
+          <span> 共{{ total }}条记录 </span>
         </template>
         <template #right></template>
       </PageHeader>
       <!-- 信息展示 -->
       <template>
-        <el-table style="width: 100%">
+        <el-table style="width: 100%" :data="labelForm">
           <el-table-column label="序号" />
-          <el-table-column label="所属学科" />
-          <el-table-column label="目录名称" />
-          <el-table-column label="创建者" />
-          <el-table-column label="创建日期" />
-          <el-table-column label="状态" />
+          <el-table-column label="所属学科" prop="subjectName" />
+          <el-table-column label="标签名称" prop="tagName" />
+          <el-table-column label="创建者" prop="creatorID" />
+          <el-table-column label="创建日期" prop="addDate" />
+          <el-table-column label="状态" prop="state" />
           <el-table-column label="操作">
             <template>
               <el-row>
@@ -69,13 +70,15 @@
 </template>
 
 <script>
+import { getLabelListAPI } from '@/api/disciplinemanagement'
 export default {
   name: 'DisciplineTags',
   data() {
     return {
+      labelForm: [],
       query: {
         page: 1,
-        pagesize: 5
+        pagesize: 2
       },
       total: 5,
       form: {
@@ -90,14 +93,25 @@ export default {
       }
     }
   },
+  created() {
+    this.getLabelList()
+  },
   methods: {
+    async getLabelList() {
+      const resp = await getLabelListAPI(this.query)
+      console.log(resp.data)
+      this.query.page = +resp.data.page
+      this.query.pagesize = +resp.data.pagesize
+      this.total = resp.data.counts
+      this.labelForm = resp.data.items
+    },
     handleSizeChange(val) {
       this.query.pagesize = val
-      this.getUserList()
+      this.getLabelList()
     },
     handleCurrentChange(val) {
       this.query.page = val
-      this.getUserList()
+      this.getLabelList()
     }
   }
 }

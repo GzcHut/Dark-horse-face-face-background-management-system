@@ -14,7 +14,23 @@ export function getUserListAPI(query) {
 export function addUserListAPI(formData) {
   return request({
     url: '/users',
-    method: 'get',
+    method: 'post',
     data: formData
+  })
+}
+
+// 获取用户详情，用于回显
+export function revUserListAPI(dataId) {
+  return request({
+    url: `/users/${dataId}`,
+    method: 'get'
+  })
+}
+
+// 删除用户
+export function delUserListAPI(dataId) {
+  return request({
+    url: `/users/${dataId}`,
+    method: 'delete'
   })
 }

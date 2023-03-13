@@ -26,6 +26,8 @@ export default {
 .page-header {
   display: flex;
   justify-content: space-between;
+  background-color: #f4f4f5;
+  padding: 10px;
   .left {
     .content {
       height: 100%;
@@ -33,8 +35,9 @@ export default {
       align-items: center;
       padding: 0px 15px;
       border-radius: 5px;
+      color: #909399;
       .el-icon-info {
-        color: #409eff;
+        color: #909399;
         margin-right: 5px;
       }
     }

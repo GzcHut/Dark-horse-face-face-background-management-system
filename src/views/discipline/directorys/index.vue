@@ -1,4 +1,5 @@
 <template>
+  <!-- 目录 -->
   <div>
     <el-card>
       <SearchComponents>
@@ -25,20 +26,20 @@
       </SearchComponents>
       <PageHeader>
         <template #left>
-          <span> 共5条记录 </span>
+          <span> 共{{ total }}条记录 </span>
         </template>
         <template #right></template>
       </PageHeader>
       <!-- 信息展示 -->
       <template>
-        <el-table style="width: 100%">
+        <el-table style="width: 100%" :data="directoryForm">
           <el-table-column label="序号" />
-          <el-table-column label="所属学科" />
-          <el-table-column label="目录名称" />
-          <el-table-column label="创建者" />
-          <el-table-column label="创建日期" />
-          <el-table-column label="面试题数量" />
-          <el-table-column label="状态" />
+          <el-table-column label="所属学科" prop="subjectName" />
+          <el-table-column label="目录名称" prop="directoryName" />
+          <el-table-column label="创建者" prop="creatorID" />
+          <el-table-column label="创建日期" prop="addDate" />
+          <el-table-column label="面试题数量" prop="totals" />
+          <el-table-column label="状态" prop="state" />
           <el-table-column label="操作">
             <template>
               <el-row>
@@ -70,13 +71,15 @@
 </template>
 
 <script>
+import { getDirectoryListAPI } from '@/api/disciplinemanagement'
 export default {
   name: 'DisciplineDirectorys',
   data() {
     return {
+      directoryForm: [],
       query: {
         page: 1,
-        pagesize: 5
+        pagesize: 2
       },
       total: 5,
       form: {
@@ -91,14 +94,26 @@ export default {
       }
     }
   },
+  created() {
+    this.getDirectoryList()
+  },
   methods: {
+    async getDirectoryList() {
+      const resp = await getDirectoryListAPI(this.query)
+      console.log(resp.data)
+      this.query.page = +resp.data.page
+      this.query.pagesize = +resp.data.pagesize
+      this.total = resp.data.counts
+      this.directoryForm = resp.data.items
+      console.log(this.directoryForm)
+    },
     handleSizeChange(val) {
       this.query.pagesize = val
-      this.getUserList()
+      this.getDirectoryList()
     },
     handleCurrentChange(val) {
       this.query.page = val
-      this.getUserList()
+      this.getDirectoryList()
     }
   }
 }

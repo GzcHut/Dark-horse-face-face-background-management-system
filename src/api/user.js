@@ -11,3 +11,10 @@ export function getLoginAPI(loginForm) {
 }
 
 
+// 用户信息
+export function getUserInfoActionAPI() {
+  return request({
+    url: '/frame/profile',
+    method: 'post'
+  })
+}

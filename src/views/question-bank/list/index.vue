@@ -1,25 +1,26 @@
 <template>
+  <!-- 基础题库 -->
   <div>
     <el-card>
       <QuestionBankInput />
       <PageHeader>
         <template #left>
-          <span> 共5条记录 </span>
+          <span> 共89条记录 </span>
         </template>
         <template #right></template>
       </PageHeader>
       <!-- 信息展示 -->
       <template>
-        <el-table style="width: 100%">
-          <el-table-column label="试题编号" />
-          <el-table-column label="学科" />
-          <el-table-column label="目录" />
-          <el-table-column label="题型" />
-          <el-table-column label="题干" />
-          <el-table-column label="录入时间" />
-          <el-table-column label="难度" />
-          <el-table-column label="录入人" />
-          <el-table-column label="操作">
+        <el-table style="width: 100%" :data="questionForm">
+          <el-table-column label="试题编号" prop="number" />
+          <el-table-column label="学科" prop="subjectID" />
+          <el-table-column label="目录" prop="catalogID" />
+          <el-table-column label="题型" prop="questionType" />
+          <el-table-column label="题干" prop="question" />
+          <el-table-column label="录入时间" prop="addDate" />
+          <el-table-column label="难度" prop="difficulty" />
+          <el-table-column label="录入人" prop="creator" />
+          <el-table-column label="操作" fixed="right" width="210px">
             <template>
               <el-row>
                 <el-button type="text">预览</el-button>
@@ -52,10 +53,12 @@
 </template>
 
 <script>
+import { getFQuestionListAPI } from '@/api/questionbankmanagement'
 export default {
   name: 'List',
   data() {
     return {
+      questionForm: [],
       query: {
         page: 1,
         pagesize: 5
@@ -63,7 +66,15 @@ export default {
       total: 5
     }
   },
+  created() {
+    this.getFQuestionList()
+  },
   methods: {
+    async getFQuestionList() {
+      const resp = await getFQuestionListAPI(this.query)
+      console.log(resp.data.items)
+      this.questionForm = resp.data.items
+    },
     handleSizeChange(val) {
       this.query.pagesize = val
       this.getUserList()

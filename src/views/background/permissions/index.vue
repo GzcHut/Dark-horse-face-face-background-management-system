@@ -1,4 +1,5 @@
 <template>
+  <!-- 权限页面 -->
   <div>
     <el-card>
       <SearchComponents>
@@ -15,15 +16,16 @@
       </SearchComponents>
       <PageHeader>
         <template #left>
-          <span> 共5条记录 </span>
+          <span> 共{{ total }}条记录 </span>
         </template>
         <template #right></template>
       </PageHeader>
       <!-- 信息展示 -->
       <template>
-        <el-table style="width: 100%">
-          <el-table-column type="selection" width="55" />
-          <el-table-column label="用户名" />
+        <el-table style="width: 100%" :data="permissionsForm">
+          <el-table-column type="selection" />
+          <el-table-column label="用户名" prop="title" />
+          <el-table-column label="日期" prop="create_date" />
           <el-table-column label="操作">
             <template>
               <el-row>
@@ -54,25 +56,38 @@
 </template>
 
 <script>
+import { getPermissionsAPI } from '@/api/permissiongroups'
 export default {
   name: 'Permissions',
   data() {
     return {
+      permissionsForm: [],
       query: {
         page: 1,
-        pagesize: 5
+        pagesize: 2
       },
       total: 1
     }
   },
+  created() {
+    this.getPermissions()
+  },
   methods: {
+    async getPermissions() {
+      const resp = await getPermissionsAPI(this.query)
+      console.log(resp.data)
+      this.permissionsForm = resp.data.list
+      this.query.page = +resp.data.page
+      this.query.pagesize = +resp.data.pagesize
+      this.total = resp.data.counts
+    },
     handleSizeChange(val) {
       this.query.pagesize = val
-      this.getUserList()
+      this.getPermissions()
     },
     handleCurrentChange(val) {
       this.query.page = val
-      this.getUserList()
+      this.getPermissions()
     }
   }
 }

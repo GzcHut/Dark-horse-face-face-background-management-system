@@ -1,4 +1,5 @@
 <template>
+  <!-- 组题列表 -->
   <div>
     <el-card>
       <SearchComponents>
@@ -16,7 +17,7 @@
       </SearchComponents>
       <PageHeader>
         <template #left>
-          <span> 共5条记录 </span>
+          <span> 共69条记录 </span>
         </template>
         <template #right></template>
       </PageHeader>
@@ -59,6 +60,7 @@
 </template>
 
 <script>
+import { getGQuestionListAPI } from '@/api/questionbankmanagement'
 export default {
   name: 'Randoms',
   data() {
@@ -70,7 +72,15 @@ export default {
       total: 5
     }
   },
+  created() {
+    // this.getGQuestionList()
+  },
   methods: {
+    // 获取组题列表 接口报500错误
+    async getGQuestionList() {
+      const resp = await getGQuestionListAPI(this.query)
+      console.log(resp)
+    },
     handleSizeChange(val) {
       this.query.pagesize = val
       this.getUserList()

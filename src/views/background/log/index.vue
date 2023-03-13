@@ -3,7 +3,8 @@
     <el-card>
       <PageHeader>
         <template #left>
-          <span> 共5条记录 </span>
+          <span>暂无接口，没有数据展示</span>
+          <!-- <span> 共5条记录 </span> -->
         </template>
         <template #right></template>
       </PageHeader>

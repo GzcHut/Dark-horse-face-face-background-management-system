@@ -1,20 +1,33 @@
 <template>
+  <!--面试技巧 -->
   <div>
     <el-card>
       <SearchComponents>
         <template #left>
           <el-form>
-            <el-form-item label="关键字">
-              <el-input placeholder="根据编号搜索" />
-            </el-form-item>
-            <el-form-item label="状态">
-              <el-select v-model="form.region" placeholder="请选择活动区域">
-                <el-option label="区域一" value="beijing" />
-                <el-option label="区域二" value="beijing" />
-              </el-select>
-            </el-form-item>
-            <el-button size="small"> 清除 </el-button>
-            <el-button type="primary" size="small"> 搜索 </el-button>
+            <div class="content">
+              <el-form-item label="关键字">
+                <div class="content">
+                  <el-input placeholder="根据编号搜索" size="small" />
+                </div>
+              </el-form-item>
+              <el-form-item label="状态">
+                <div class="content">
+                  <el-select
+                    v-model="form.region"
+                    placeholder="请选择活动区域"
+                    size="small"
+                  >
+                    <el-option label="区域一" value="beijing" />
+                    <el-option label="区域二" value="beijing" />
+                  </el-select>
+                </div>
+              </el-form-item>
+              <div>
+                <el-button size="small"> 清除 </el-button>
+                <el-button type="primary" size="small"> 搜索 </el-button>
+              </div>
+            </div>
           </el-form>
         </template>
         <template #right>
@@ -25,19 +38,19 @@
       </SearchComponents>
       <PageHeader>
         <template #left>
-          <span> 共5条记录 </span>
+          <span> 共{{ total }}条记录 </span>
         </template>
         <template #right></template>
       </PageHeader>
       <!-- 信息展示 -->
       <template>
-        <el-table style="width: 100%">
+        <el-table style="width: 100%" :data="essayForm">
           <el-table-column label="序号" />
-          <el-table-column label="文章标题" />
-          <el-table-column label="阅读数" />
-          <el-table-column label="录入人" />
-          <el-table-column label="录入时间" />
-          <el-table-column label="状态" />
+          <el-table-column label="文章标题" prop="title" />
+          <el-table-column label="阅读数" prop="" />
+          <el-table-column label="录入人" prop="username" />
+          <el-table-column label="录入时间" prop="createTime" />
+          <el-table-column label="状态" prop="state" />
           <el-table-column label="操作">
             <template>
               <el-row>
@@ -70,13 +83,15 @@
 </template>
 
 <script>
+import { getEssayListAPI } from '@/api/interviewskills'
 export default {
   name: 'InterviewSkills',
   data() {
     return {
+      essayForm: [],
       query: {
         page: 1,
-        pagesize: 5
+        pagesize: 2
       },
       total: 5,
       form: {
@@ -91,12 +106,25 @@ export default {
       }
     }
   },
+  created() {
+    this.getEssayList()
+  },
   methods: {
+    async getEssayList() {
+      const resp = await getEssayListAPI(this.query)
+      console.log(resp.data)
+      this.query.page = +resp.data.page
+      this.query.pagesize = +resp.data.pagesize
+      this.total = resp.data.counts
+      this.essayForm = resp.data.items
+    },
     handleSizeChange(val) {
       this.query.pagesize = val
+      this.getEssayList()
     },
     handleCurrentChange(val) {
       this.query.page = val
+      this.getEssayList()
     }
   }
 }

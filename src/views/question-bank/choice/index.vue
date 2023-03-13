@@ -1,29 +1,30 @@
 <template>
+  <!-- 精选题库 -->
   <div>
     <QuestionBankInput />
     <el-tabs v-model="activeName" type="card">
       <el-tab-pane label="全部" name="first">
         <PageHeader>
           <template #left>
-            <span> 共5条记录 </span>
+            <span> 共{{ total }}条记录 </span>
           </template>
           <template #right></template>
         </PageHeader>
         <div>
           <!-- 信息展示 -->
           <template>
-            <el-table style="width: 100%">
-              <el-table-column label="试题编号" />
-              <el-table-column label="学科" />
-              <el-table-column label="目录" />
-              <el-table-column label="题型" />
-              <el-table-column label="题干" />
-              <el-table-column label="录入时间" />
-              <el-table-column label="难度" />
-              <el-table-column label="录入人" />
-              <el-table-column label="审核状态" />
-              <el-table-column label="审核意见" />
-              <el-table-column label="审核人" />
+            <el-table style="width: 100%" :data="questionForm">
+              <el-table-column label="试题编号" prop="number" />
+              <el-table-column label="学科" prop="subjectID" />
+              <el-table-column label="目录" prop="catalogID" />
+              <el-table-column label="题型" prop="questionType" />
+              <el-table-column label="题干" prop="question" />
+              <el-table-column label="录入时间" prop="addDate" />
+              <el-table-column label="难度" prop="difficulty" />
+              <el-table-column label="录入人" prop="creator" />
+              <el-table-column label="审核状态" prop="chkState" />
+              <el-table-column label="审核意见" prop="chkRemarks" />
+              <el-table-column label="审核人" prop="chkUser" />
               <el-table-column label="发布状态" />
               <el-table-column label="操作" fixed="right">
                 <template>
@@ -207,26 +208,41 @@
 </template>
 
 <script>
+import { getSQuestionListAPI } from '@/api/questionbankmanagement'
 export default {
   name: 'Choice',
   data() {
     return {
       activeName: 'first',
+      questionForm: [],
       query: {
         page: 1,
-        pagesize: 5
+        pagesize: 2
       },
       total: 5
     }
   },
+  created() {
+    this.getSQuestionList()
+  },
   methods: {
+    // 获取精选题库列表
+    async getSQuestionList() {
+      const resp = await getSQuestionListAPI(this.query)
+      console.log(resp)
+      console.log(resp.data.items)
+      this.questionForm = resp.data.items
+      this.total = resp.data.counts
+      this.query.page = resp.data.page
+      this.query.pagesize = resp.data.pagesize
+    },
     handleSizeChange(val) {
       this.query.pagesize = val
-      this.getUserList()
+      this.getSQuestionList()
     },
     handleCurrentChange(val) {
       this.query.page = val
-      this.getUserList()
+      this.getSQuestionList()
     }
   }
 }

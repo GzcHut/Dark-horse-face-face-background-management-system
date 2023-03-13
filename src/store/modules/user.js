@@ -1,5 +1,4 @@
-import { getLoginAPI } from '@/api/user'
-import { getUserInfoActionAPI } from '@/api/usermanage'
+import { getLoginAPI, getUserInfoActionAPI } from '@/api/user'
 
 const getDefaultState = () => {
   return {
